@@ -46,7 +46,7 @@ class Quote(models.Model):
         verbose_name="Источник"
     )
 
-    # "Вес" цитаты. Чем больше, тем чаще показывается.
+
     weight = models.PositiveIntegerField(
         default=1,
         verbose_name="Вес",
@@ -58,7 +58,7 @@ class Quote(models.Model):
     likes = models.PositiveIntegerField(default=0, verbose_name="Лайки")
     dislikes = models.PositiveIntegerField(default=0, verbose_name="Дизлайки")
 
-    # Дата и время создания (проставляется автоматически при создании)
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
     class Meta:
@@ -71,7 +71,7 @@ class Quote(models.Model):
         # Берем первые 50 символов цитаты для отображения
         return f'"{self.text[:50]}..." из {self.source}'
 
-    # Кастомная валидация модели. Django будет вызывать этот метод перед сохранением.
+
     def clean(self):
         if not self.pk and self.source.quote_count >= 3:
             raise ValidationError(
