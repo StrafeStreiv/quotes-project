@@ -1,0 +1,116 @@
+{% extends 'quotes/base.html' %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Карточки с общей статистикой -->
+    <div class="col-12 mb-4">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white text-center">
+                    <div class="card-body">
+                        <h2 class="display-4">{{ total_quotes }}</h2>
+                        <p class="mb-0">Всего цитат</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white text-center">
+                    <div class="card-body">
+                        <h2 class="display-4">{{ total_sources }}</h2>
+                        <p class="mb-0">Источников</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white text-center">
+                    <div class="card-body">
+                        <h2 class="display-4">{{ total_views }}</h2>
+                        <p class="mb-0">Просмотров</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white text-center">
+                    <div class="card-body">
+                        <h2 class="display-4">{{ total_likes }}</h2>
+                        <p class="mb-0">Лайков</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по типам источников -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="h5 mb-0"> Распределение по типам</h3>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for item in sources_by_type %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.get_type_display }}
+                        <span class="badge bg-primary rounded-pill">
+                            {{ item.count }} источ. ({{ item.quote_count }} цит.)
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Лучшее соотношение лайков -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="h5 mb-0"> Лучшее соотношение лайков</h3>
+            </div>
+            <div class="card-body">
+                {% if best_ratio %}
+                    <div class="list-group">
+                        {% for quote in best_ratio %}
+                        <div class="list-group-item">
+                            <small>"{{ quote.text|truncatewords:12 }}"</small>
+                            <div class="text-muted">
+                                👍{{ quote.likes }} / 👎{{ quote.dislikes }}
+                                ({{ quote.ratio|floatformat:2 }})
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Недавняя активность -->
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="h5 mb-0"> Недавняя активность (7 дней)</h3>
+            </div>
+            <div class="card-body">
+                {% if recent_activity %}
+                    <div class="list-group">
+                        {% for quote in recent_activity %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>"{{ quote.text|truncatewords:15 }}"</span>
+                                <small class="text-muted">{{ quote.created_at|timesince }} назад</small>
+                            </div>
+                            <small class="text-muted">Из: {{ quote.source }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">Нет активности за последнюю неделю</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

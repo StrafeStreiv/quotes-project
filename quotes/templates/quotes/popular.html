@@ -1,0 +1,79 @@
+{% extends 'quotes/base.html' %}
+
+{% block title %}Популярные цитаты{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Основной контент - топ цитат -->
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0"> Топ-10 самых популярных цитат</h2>
+            </div>
+            <div class="card-body">
+                {% if top_quotes %}
+                    <div class="list-group">
+                        {% for quote in top_quotes %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">"{{ quote.text }}"</h5>
+                                <small class="text-muted">Рейтинг: {{ quote.likes|add:quote.dislikes }}</small>
+                            </div>
+                            <p class="mb-1"><strong>Источник:</strong> {{ quote.source }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    👍 {{ quote.likes }} | 👎 {{ quote.dislikes }} | 👀 {{ quote.views }}
+                                </small>
+                                <small>{{ quote.created_at|date:"d.m.Y" }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">Пока нет цитат для отображения</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Боковая панель с дополнительными выборками -->
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-info text-white">
+                <h3 class="h6 mb-0"> Самые просматриваемые</h3>
+            </div>
+            <div class="card-body">
+                {% if most_viewed %}
+                    <div class="list-group list-group-flush">
+                        {% for quote in most_viewed %}
+                        <div class="list-group-item px-0">
+                            <small>"{{ quote.text|truncatewords:10 }}"</small>
+                            <div class="text-muted">👀 {{ quote.views }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Недавние цитаты -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h3 class="h6 mb-0"> Недавно добавленные</h3>
+            </div>
+            <div class="card-body">
+                {% if recent_quotes %}
+                    <div class="list-group list-group-flush">
+                        {% for quote in recent_quotes %}
+                        <div class="list-group-item px-0">
+                            <small>"{{ quote.text|truncatewords:8 }}"</small>
+                            <div class="text-muted">{{ quote.created_at|timesince }} назад</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

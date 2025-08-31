@@ -50,4 +50,21 @@
 <div class="text-center mt-3">
     <a href="/" class="btn btn-primary">Следующая цитата</a>
 </div>
+<div class="row mt-4">
+    <div class="col-md-4 mb-2">
+        <a href="{% url 'popular_quotes' %}" class="btn btn-outline-primary w-100">
+             Топ цитат
+        </a>
+    </div>
+    <div class="col-md-4 mb-2">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-info w-100">
+             Статистика
+        </a>
+    </div>
+    <div class="col-md-4 mb-2">
+        <a href="{% url 'add_quote' %}" class="btn btn-outline-success w-100">
+             Добавить свою
+        </a>
+    </div>
+</div>
 {% endblock %}

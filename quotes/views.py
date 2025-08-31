@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count
 from django.contrib import messages
 from random import randint
 from .models import Quote, Source
 from .forms import QuoteForm
+from django.utils import timezone
+from datetime import timedelta
 
 def get_random_quote():
     quotes = Quote.objects.filter(weight__gte=1)
@@ -67,3 +69,59 @@ def dislike_quote(request, quote_id):
         quote.refresh_from_db()
         return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def popular_quotes(request):
+    """Страница с популярными цитатами"""
+    top_quotes = Quote.objects.annotate(
+        popularity=F('likes') - F('dislikes')
+    ).order_by('-popularity', '-created_at')[:10]
+
+    # Дополнительные выборки
+    most_viewed = Quote.objects.order_by('-views')[:5]
+    recent_quotes = Quote.objects.order_by('-created_at')[:5]
+
+    context = {
+        'top_quotes': top_quotes,
+        'most_viewed': most_viewed,
+        'recent_quotes': recent_quotes,
+        'active_tab': 'popular'
+    }
+    return render(request, 'quotes/popular.html', context)
+
+
+def dashboard(request):
+    """Дашборд со статистикой"""
+    total_quotes = Quote.objects.count()
+    total_sources = Source.objects.count()
+    total_views = Quote.objects.aggregate(Sum('views'))['views__sum'] or 0
+    total_likes = Quote.objects.aggregate(Sum('likes'))['likes__sum'] or 0
+
+    # Статистика по типам источников
+    sources_by_type = Source.objects.values('type').annotate(
+        count=Count('id'),
+        quote_count=Sum('quote_count')
+    ).order_by('-count')
+
+    # Недавняя активность
+    last_week = timezone.now() - timedelta(days=7)
+    recent_activity = Quote.objects.filter(
+        created_at__gte=last_week
+    ).order_by('-created_at')[:10]
+
+    # Цитаты с лучшим соотношением лайков/дизлайков
+    best_ratio = Quote.objects.annotate(
+        ratio=F('likes') / (F('dislikes') + 1)  # +1 чтобы избежать деления на 0
+    ).filter(likes__gt=0).order_by('-ratio')[:5]
+
+    context = {
+        'total_quotes': total_quotes,
+        'total_sources': total_sources,
+        'total_views': total_views,
+        'total_likes': total_likes,
+        'sources_by_type': sources_by_type,
+        'recent_activity': recent_activity,
+        'best_ratio': best_ratio,
+        'active_tab': 'dashboard'
+    }
+    return render(request, 'quotes/dashboard.html', context)
