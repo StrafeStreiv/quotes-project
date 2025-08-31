@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.db.models import Sum
+from django.db.models import Sum, F
+from django.contrib import messages
 from random import randint
-from .models import Quote
-
+from .models import Quote, Source
+from .forms import QuoteForm
 
 def get_random_quote():
     quotes = Quote.objects.filter(weight__gte=1)
@@ -30,3 +31,39 @@ def index(request):
 
     context = {'quote': random_quote}
     return render(request, 'quotes/index.html', context)
+
+
+def add_quote(request):
+    """Страница добавления новой цитаты"""
+    if request.method == 'POST':
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            quote = form.save()
+            messages.success(request, 'Цитата успешно добавлена!')
+            return redirect('index')
+    else:
+        form = QuoteForm()
+
+    return render(request, 'quotes/add_quote.html', {'form': form})
+
+
+def like_quote(request, quote_id):
+    """Обработчик лайка (AJAX)"""
+    if request.method == 'POST':
+        quote = get_object_or_404(Quote, id=quote_id)
+        quote.likes = F('likes') + 1
+        quote.save()
+        quote.refresh_from_db()  # Обновляем объект из БД
+        return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def dislike_quote(request, quote_id):
+    """Обработчик дизлайка (AJAX)"""
+    if request.method == 'POST':
+        quote = get_object_or_404(Quote, id=quote_id)
+        quote.dislikes = F('dislikes') + 1
+        quote.save()
+        quote.refresh_from_db()
+        return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
+    return JsonResponse({'error': 'Invalid request'}, status=400)

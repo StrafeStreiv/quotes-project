@@ -1,0 +1,83 @@
+{% extends 'quotes/base.html' %}
+
+{% block title %}Добавить цитату{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2 class="text-center"> Добавить новую цитату</h2>
+    </div>
+    <div class="card-body">
+        <!-- Сообщения об успехе/ошибках -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Поле текста цитаты -->
+            <div class="mb-3">
+                <label for="{{ form.text.id_for_label }}" class="form-label">{{ form.text.label }}</label>
+                {{ form.text }}
+                {% if form.text.errors %}
+                    <div class="text-danger">{{ form.text.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Поле выбора источника -->
+            {% if not form.source.field.widget.is_hidden %}
+            <div class="mb-3">
+                <label for="{{ form.source.id_for_label }}" class="form-label">{{ form.source.label }}</label>
+                {{ form.source }}
+                {% if form.source.errors %}
+                    <div class="text-danger">{{ form.source.errors }}</div>
+                {% endif %}
+                <div class="form-text">Можно выбрать только источники, у которых меньше 3 цитат</div>
+            </div>
+            {% endif %}
+
+            <!-- Поля для нового источника -->
+            <div class="border p-3 mb-3 bg-light">
+                <h5>Или создайте новый источник:</h5>
+
+                <div class="mb-3">
+                    <label for="{{ form.new_source_title.id_for_label }}" class="form-label">{{ form.new_source_title.label }}</label>
+                    {{ form.new_source_title }}
+                    {% if form.new_source_title.errors %}
+                        <div class="text-danger">{{ form.new_source_title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.new_source_type.id_for_label }}" class="form-label">{{ form.new_source_type.label }}</label>
+                    {{ form.new_source_type }}
+                    {% if form.new_source_type.errors %}
+                        <div class="text-danger">{{ form.new_source_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Поле веса -->
+            <div class="mb-3">
+                <label for="{{ form.weight.id_for_label }}" class="form-label">{{ form.weight.label }}</label>
+                {{ form.weight }}
+                {% if form.weight.errors %}
+                    <div class="text-danger">{{ form.weight.errors }}</div>
+                {% endif %}
+                <div class="form-text">{{ form.weight.help_text }}</div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">Добавить цитату</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Назад к цитатам</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

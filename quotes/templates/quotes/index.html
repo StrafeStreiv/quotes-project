@@ -23,16 +23,20 @@
                 </small>
             </div>
 
-
             <div class="mt-3">
-                <button class="btn btn-outline-success btn-sm" disabled>
-                    👍 {{ quote.likes }}
-                </button>
-                <button class="btn btn-outline-danger btn-sm ms-2" disabled>
-                    👎 {{ quote.dislikes }}
-                </button>
+                <form class="d-inline" method="post" action="{% url 'like_quote' quote.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-success btn-sm like-btn">
+                        👍 <span class="likes-count">{{ quote.likes }}</span>
+                    </button>
+                </form>
+                <form class="d-inline ms-2" method="post" action="{% url 'dislike_quote' quote.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm dislike-btn">
+                        👎 <span class="dislikes-count">{{ quote.dislikes }}</span>
+                    </button>
+                </form>
             </div>
-
         {% else %}
 
             <div class="alert alert-warning">
