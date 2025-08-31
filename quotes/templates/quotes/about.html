@@ -1,0 +1,81 @@
+{% extends 'quotes/base.html' %}
+
+{% block title %}О проекте{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h2 class="h4 mb-0">️ О проекте Random Quotes</h2>
+            </div>
+            <div class="card-body">
+
+                <!-- Описание проекта -->
+                <div class="mb-4">
+                    <h4> О чём этот проект?</h4>
+                    <p>Это веб-приложение для любителей цитат из фильмов и книг. Здесь вы можете:</p>
+                    <ul>
+                        <li>Наслаждаться случайными цитатами</li>
+                        <li>Добавлять свои любимые цитаты</li>
+                        <li>Оценивать понравившиеся цитаты</li>
+                        <li>Смотреть рейтинг популярных цитат</li>
+                    </ul>
+                </div>
+
+                <div class="row">
+                    <!-- Возможности -->
+                    <div class="col-md-6">
+                        <h4>Возможности</h4>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item"> Умный случайный выбор цитат (с учетом веса)</div>
+                            <div class="list-group-item"> Добавление цитат через удобную форму</div>
+                            <div class="list-group-item"> Защита от дубликатов</div>
+                            <div class="list-group-item"> Не более 3 цитат на один источник</div>
+                            <div class="list-group-item"> Система лайков/дизлайков</div>
+                            <div class="list-group-item"> Топ-10 популярных цитат</div>
+                            <div class="list-group-item"> Статистика и аналитика</div>
+                        </div>
+                    </div>
+
+                    <!-- Технологии -->
+                    <div class="col-md-6">
+                        <h4>Технологии</h4>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <strong>Backend:</strong> Django 4.2, Python 3.9
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Frontend:</strong> Bootstrap 5, JavaScript
+                            </div>
+                            <div class="list-group-item">
+                                <strong>База данных:</strong> SQLite
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Деплой:</strong> PythonAnywhere
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Для разработчиков -->
+                <div class="mt-4 p-4 bg-light rounded">
+                    <h4>Для разработчиков</h4>
+                    <p>Это тестовое задание. Исходный код открыт и доступен на GitHub.</p>
+
+                    <div class="d-grid gap-2 d-md-flex mt-3">
+                        <a href="https://github.com/StrafeStreiv/quotes-project"
+                           class="btn btn-outline-dark me-2" target="_blank">
+                            Исходный код на GitHub
+                        </a>
+                        <a href="{% url 'add_quote' %}" class="btn btn-primary">
+                            Попробовать добавить цитату
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

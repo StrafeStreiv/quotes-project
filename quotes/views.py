@@ -125,3 +125,10 @@ def dashboard(request):
         'active_tab': 'dashboard'
     }
     return render(request, 'quotes/dashboard.html', context)
+
+def about(request):
+    """Страница о проекте"""
+    context = {
+        'active_tab': 'about'  # Для подсветки пункта меню
+    }
+    return render(request, 'quotes/about.html', context)

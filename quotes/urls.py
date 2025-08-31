@@ -8,4 +8,5 @@ urlpatterns = [
     path('dislike/<int:quote_id>/', views.dislike_quote, name='dislike_quote'),
     path('popular/', views.popular_quotes, name='popular_quotes'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('about/', views.about, name='about'),
 ]

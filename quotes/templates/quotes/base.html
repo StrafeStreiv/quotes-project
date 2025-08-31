@@ -27,6 +27,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'about' %}active{% endif %}" href="{% url 'about' %}">
+                            О проекте
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {% if active_tab == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
                             Статистика
                         </a>
@@ -55,7 +60,7 @@
                 </main>
 
                 <footer class="text-center mt-5 text-muted">
-                    <p>Quotes Project © 2024</p>
+                    <p>Quotes Project © 2025</p>
                 </footer>
             </div>
         </div>
