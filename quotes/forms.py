@@ -51,13 +51,21 @@ class QuoteForm(forms.ModelForm):
         new_source_title = cleaned_data.get('new_source_title')
         new_source_type = cleaned_data.get('new_source_type')
 
-        # Проверяем, что выбран либо существующий источник, либо указаны данные для нового
-        if not source and not (new_source_title and new_source_type):
+        # Если выбран существующий источник, игнорируем поля нового источника
+        if source:
+            # Очищаем поля нового источника, чтобы они не влияли на валидацию
+            cleaned_data['new_source_title'] = ''
+            cleaned_data['new_source_type'] = ''
+            new_source_title = ''
+            new_source_type = ''
+
+        # Если НЕ выбран существующий источник, проверяем данные для нового
+        elif not source and not (new_source_title and new_source_type):
             raise forms.ValidationError(
                 'Выберите существующий источник или укажите данные для нового'
             )
 
-        # Если указан новый источник, проверяем его данные
+        # Если указаны данные для нового источника, проверяем их
         if new_source_title and new_source_type:
             # Проверяем, не существует ли уже источник с таким названием
             if Source.objects.filter(title__iexact=new_source_title.strip()).exists():
@@ -65,7 +73,7 @@ class QuoteForm(forms.ModelForm):
                     f'Источник "{new_source_title}" уже существует. Выберите его из списка.'
                 )
 
-        # Проверяем дубликаты цитат
+        # Проверяем дубликаты цитат только для существующих источников
         if text and source:
             if Quote.objects.filter(text__iexact=text.strip(), source=source).exists():
                 raise forms.ValidationError(
@@ -84,6 +92,9 @@ class QuoteForm(forms.ModelForm):
                 title=new_source_title.strip(),
                 type=new_source_type
             )
-            self.cleaned_data['source'] = source
+            self.instance.source = source
+        # Если выбран существующий источник, используем его
+        elif self.cleaned_data.get('source'):
+            self.instance.source = self.cleaned_data['source']
 
         return super().save(commit=commit)

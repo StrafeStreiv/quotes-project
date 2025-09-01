@@ -51,23 +51,34 @@ def add_quote(request):
 
 def like_quote(request, quote_id):
     """Обработчик лайка (AJAX)"""
-    if request.method == 'POST':
-        quote = get_object_or_404(Quote, id=quote_id)
-        quote.likes += 1
-        quote.save()
-        quote.refresh_from_db()  # Обновляем объект из БД
-        return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            quote = get_object_or_404(Quote, id=quote_id)
+            quote.likes += 1
+            quote.save()
+            return JsonResponse({
+                'likes': quote.likes,
+                'dislikes': quote.dislikes,
+                'status': 'success'
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e), 'status': 'error'}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
 
 def dislike_quote(request, quote_id):
     """Обработчик дизлайка (AJAX)"""
-    if request.method == 'POST':
-        quote = get_object_or_404(Quote, id=quote_id)
-        quote.dislikes += 1
-        quote.save()
-        quote.refresh_from_db()
-        return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            quote = get_object_or_404(Quote, id=quote_id)
+            quote.dislikes += 1
+            quote.save()
+            return JsonResponse({
+                'likes': quote.likes,
+                'dislikes': quote.dislikes,
+                'status': 'success'
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e), 'status': 'error'}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
@@ -111,7 +122,7 @@ def dashboard(request):
 
     # Цитаты с лучшим соотношением лайков/дизлайков
     best_ratio = Quote.objects.annotate(
-        ratio=F('likes') / (F('dislikes') + 1)  # +1 чтобы избежать деления на 0
+        ratio=F('likes') / (F('dislikes'))  # +1 чтобы избежать деления на 0
     ).filter(likes__gt=0).order_by('-ratio')[:5]
 
     context = {
