@@ -56,14 +56,28 @@ def like_quote(request, quote_id):
             quote = get_object_or_404(Quote, id=quote_id)
             quote.likes += 1
             quote.save()
+
+            # Получаем следующую случайную цитату
+            next_quote = get_random_quote()
+            if next_quote:
+                next_quote.views += 1
+                next_quote.save()
+
             return JsonResponse({
                 'likes': quote.likes,
                 'dislikes': quote.dislikes,
-                'status': 'success'
+                'status': 'success',
+                'next_quote_id': next_quote.id if next_quote else None,
+                'next_quote_text': next_quote.text if next_quote else None,
+                'next_quote_source': str(next_quote.source) if next_quote else None,
+                'next_quote_views': next_quote.views if next_quote else 0,
+                'next_quote_likes': next_quote.likes if next_quote else 0,
+                'next_quote_dislikes': next_quote.dislikes if next_quote else 0,
             })
         except Exception as e:
             return JsonResponse({'error': str(e), 'status': 'error'}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 def dislike_quote(request, quote_id):
     """Обработчик дизлайка (AJAX)"""
@@ -72,10 +86,23 @@ def dislike_quote(request, quote_id):
             quote = get_object_or_404(Quote, id=quote_id)
             quote.dislikes += 1
             quote.save()
+
+            # Получаем следующую случайную цитату
+            next_quote = get_random_quote()
+            if next_quote:
+                next_quote.views += 1
+                next_quote.save()
+
             return JsonResponse({
                 'likes': quote.likes,
                 'dislikes': quote.dislikes,
-                'status': 'success'
+                'status': 'success',
+                'next_quote_id': next_quote.id if next_quote else None,
+                'next_quote_text': next_quote.text if next_quote else None,
+                'next_quote_source': str(next_quote.source) if next_quote else None,
+                'next_quote_views': next_quote.views if next_quote else 0,
+                'next_quote_likes': next_quote.likes if next_quote else 0,
+                'next_quote_dislikes': next_quote.dislikes if next_quote else 0,
             })
         except Exception as e:
             return JsonResponse({'error': str(e), 'status': 'error'}, status=500)

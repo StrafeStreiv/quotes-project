@@ -96,12 +96,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const data = await response.json();
 
-                // Обновляем счетчики на странице
-                const likesElement = this.querySelector('.likes-count');
-                const dislikesElement = this.querySelector('.dislikes-count');
+                if (data.status === 'success') {
+                    // Обновляем счетчики текущей цитаты
+                    const likesElement = this.querySelector('.likes-count');
+                    const dislikesElement = this.querySelector('.dislikes-count');
 
-                if (likesElement) likesElement.textContent = data.likes;
-                if (dislikesElement) dislikesElement.textContent = data.dislikes;
+                    if (likesElement) likesElement.textContent = data.likes;
+                    if (dislikesElement) dislikesElement.textContent = data.dislikes;
+
+                    // Если есть следующая цитата, обновляем страницу
+                    if (data.next_quote_id) {
+                        // Плавно скрываем текущую цитату
+                        const quoteCard = document.querySelector('.card');
+                        quoteCard.style.opacity = '0';
+                        quoteCard.style.transition = 'opacity 0.5s ease';
+
+                        // Через полсекунды обновляем контент
+                        setTimeout(() => {
+                            // Обновляем текст цитаты
+                            const quoteText = document.querySelector('.blockquote p');
+                            if (quoteText) quoteText.textContent = `"${data.next_quote_text}"`;
+
+                            // Обновляем источник
+                            const quoteSource = document.querySelector('.blockquote-footer cite');
+                            if (quoteSource) quoteSource.textContent = data.next_quote_source;
+
+                            // Обновляем счетчики
+                            const viewsCount = document.querySelector('small.text-muted');
+                            if (viewsCount) {
+                                viewsCount.innerHTML = `Просмотров: ${data.next_quote_views} |
+                                                       Вес: ${document.querySelector('[name=weight]')?.value || 1} |
+                                                       Добавлена: ${new Date().toLocaleDateString('ru-RU')}`;
+                            }
+
+                            // Обновляем ID цитаты в формах
+                            document.querySelectorAll('form[action*="like"], form[action*="dislike"]').forEach(form => {
+                                form.action = form.action.replace(/like\/\d+\//, `like/${data.next_quote_id}/`);
+                                form.action = form.action.replace(/dislike\/\d+\//, `dislike/${data.next_quote_id}/`);
+                            });
+
+                            // Обновляем счетчики лайков/дизлайков
+                            document.querySelectorAll('.likes-count').forEach(el => {
+                                el.textContent = data.next_quote_likes;
+                            });
+                            document.querySelectorAll('.dislikes-count').forEach(el => {
+                                el.textContent = data.next_quote_dislikes;
+                            });
+
+                            // Плавно показываем новую цитату
+                            quoteCard.style.opacity = '1';
+                        }, 500);
+                    }
+                } else {
+                    alert('Ошибка: ' + data.error);
+                }
 
             } catch (error) {
                 console.error('Error:', error);
