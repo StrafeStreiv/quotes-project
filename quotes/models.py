@@ -46,7 +46,6 @@ class Quote(models.Model):
         verbose_name="Источник"
     )
 
-
     weight = models.PositiveIntegerField(
         default=1,
         verbose_name="Вес",
@@ -57,7 +56,6 @@ class Quote(models.Model):
     views = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
     likes = models.PositiveIntegerField(default=0, verbose_name="Лайки")
     dislikes = models.PositiveIntegerField(default=0, verbose_name="Дизлайки")
-
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
@@ -71,30 +69,31 @@ class Quote(models.Model):
         # Берем первые 50 символов цитаты для отображения
         return f'"{self.text[:50]}..." из {self.source}'
 
-
     def clean(self):
-        if not self.pk and self.source.quote_count >= 3:
-            raise ValidationError(
-                f'Нельзя добавить более 3 цитат для одного источника. '
-                f'У источника "{self.source}" уже {self.source.quote_count} цитат(ы).'
-            )
+        # Проверяем ограничение: у источника не больше 3 цитат
+        # Проверяем только если источник указан и это новая цитата
+        if self.source_id and not self.pk:
+            # Используем актуальный счетчик из базы
+            current_count = Quote.objects.filter(source_id=self.source_id).count()
+            if current_count >= 3:
+                raise ValidationError(
+                    f'Нельзя добавить более 3 цитат для одного источника. '
+                    f'У источника "{self.source}" уже {current_count} цитат(ы).'
+                )
 
+        # Проверяем, что вес не меньше 1
         if self.weight < 1:
             raise ValidationError({'weight': 'Вес не может быть меньше 1.'})
 
     def save(self, *args, **kwargs):
         is_new = not self.pk
 
-
         self.full_clean()
-
 
         super().save(*args, **kwargs)
 
-
         if is_new:
             Source.objects.filter(pk=self.source_id).update(quote_count=models.F('quote_count') + 1)
-
 
     def get_absolute_url(self):
         return reverse('quote_detail', kwargs={'pk': self.pk})

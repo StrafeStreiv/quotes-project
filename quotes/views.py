@@ -53,7 +53,7 @@ def like_quote(request, quote_id):
     """Обработчик лайка (AJAX)"""
     if request.method == 'POST':
         quote = get_object_or_404(Quote, id=quote_id)
-        quote.likes = F('likes') + 1
+        quote.likes += 1
         quote.save()
         quote.refresh_from_db()  # Обновляем объект из БД
         return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
@@ -64,7 +64,7 @@ def dislike_quote(request, quote_id):
     """Обработчик дизлайка (AJAX)"""
     if request.method == 'POST':
         quote = get_object_or_404(Quote, id=quote_id)
-        quote.dislikes = F('dislikes') + 1
+        quote.dislikes += 1
         quote.save()
         quote.refresh_from_db()
         return JsonResponse({'likes': quote.likes, 'dislikes': quote.dislikes})
@@ -129,6 +129,18 @@ def dashboard(request):
 def about(request):
     """Страница о проекте"""
     context = {
-        'active_tab': 'about'  # Для подсветки пункта меню
+        'active_tab': 'about'
     }
     return render(request, 'quotes/about.html', context)
+
+def handler404(request, exception):
+    """Обработчик 404 ошибки"""
+    return render(request, 'quotes/404.html', status=404)
+
+def handler500(request):
+    """Обработчик 500 ошибки"""
+    return render(request, 'quotes/500.html', status=500)
+
+def handler403(request, exception):
+    """Обработчик 403 ошибки"""
+    return render(request, 'quotes/403.html', status=403)

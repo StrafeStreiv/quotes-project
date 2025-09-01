@@ -1,0 +1,14 @@
+{% extends 'quotes/base.html' %}
+
+{% block title %}Доступ запрещен (403){% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <div class="display-1 text-muted">403</div>
+    <h1 class="mb-4"> Доступ запрещен</h1>
+    <p class="lead mb-4">У вас нет прав для доступа к этой странице.</p>
+    <a href="{% url 'index' %}" class="btn btn-primary">
+        На главную
+    </a>
+</div>
+{% endblock %}
