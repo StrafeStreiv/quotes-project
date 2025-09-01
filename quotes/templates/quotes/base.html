@@ -125,10 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             const viewsCount = document.querySelector('small.text-muted');
                             if (viewsCount) {
                                 viewsCount.innerHTML = `Просмотров: ${data.next_quote_views} |
-                                                       Вес: ${document.querySelector('[name=weight]')?.value || 1} |
+                                                       Вес: ${data.next_quote_weight || 1} |
                                                        Добавлена: ${new Date().toLocaleDateString('ru-RU')}`;
                             }
-
                             // Обновляем ID цитаты в формах
                             document.querySelectorAll('form[action*="like"], form[action*="dislike"]').forEach(form => {
                                 form.action = form.action.replace(/like\/\d+\//, `like/${data.next_quote_id}/`);

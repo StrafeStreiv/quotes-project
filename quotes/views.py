@@ -73,6 +73,7 @@ def like_quote(request, quote_id):
                 'next_quote_views': next_quote.views if next_quote else 0,
                 'next_quote_likes': next_quote.likes if next_quote else 0,
                 'next_quote_dislikes': next_quote.dislikes if next_quote else 0,
+                'next_quote_weight': next_quote.weight if next_quote else 1,
             })
         except Exception as e:
             return JsonResponse({'error': str(e), 'status': 'error'}, status=500)
@@ -103,6 +104,7 @@ def dislike_quote(request, quote_id):
                 'next_quote_views': next_quote.views if next_quote else 0,
                 'next_quote_likes': next_quote.likes if next_quote else 0,
                 'next_quote_dislikes': next_quote.dislikes if next_quote else 0,
+                'next_quote_weight': next_quote.weight if next_quote else 1,
             })
         except Exception as e:
             return JsonResponse({'error': str(e), 'status': 'error'}, status=500)
